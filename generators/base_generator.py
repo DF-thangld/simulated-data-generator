@@ -71,7 +71,6 @@ class BaseGenerator:
 
         self.job_config = job_config
         self.validated_job_config = dict(job_config)
-        # TODO: validate job_config extensively during this phase so the generating process doesn't need to do so
         for key in self.validated_job_config['variables'].keys():
             self.validated_job_config['variables'][key] = self.__validate_data_config(key, self.validated_job_config['variables'][key])
         for object_config in self.validated_job_config['objects']:
@@ -196,12 +195,9 @@ class BaseGenerator:
         # otherwise, the variable is a static value => return that value
         return config
 
-    def generate(self, export_type="string"):
-        if export_type not in ("string", 'json'):
-            raise ExporterError("Export type only on 'string' or 'json' format")
+    def generate(self):
         exported_object = []
 
-        #TODO: code to generate data goes here
         variables = {}
         variable_config = self.validated_job_config['variables']
         for key in variable_config:
@@ -221,6 +217,4 @@ class BaseGenerator:
                     simulated_object[key] = self.__generate_value(object_config[key], predefined_variables=variables)
             exported_object.append(simulated_object)
 
-        if export_type == 'string':
-            exported_object = json.dumps(exported_object)
         return exported_object
