@@ -1,1 +1,5 @@
 schedule
+Flask
+flask-sqlalchemy
+Flask-Babel
+pymysql
