@@ -1,4 +1,4 @@
-# simulated-data-generator
+# Simulated data generator:
 A generator to create batch or stream data for workflow testing
 
 #Jobs to be done:

@@ -5,6 +5,7 @@ import uuid
 import random
 import math
 import datetime
+import string
 
 from generators.generator_errors import *
 
@@ -13,6 +14,9 @@ class BaseGenerator:
 
     sample = '''
     {
+        "type": "batch",
+        "scheduling": {"repeat": false, "start-time": "2020-01-02 17:00:00"},
+        "generate_count": 1000,
         "variables": {
             "object-10": {"type": "string", "length": 100},
             "object-1": ["1", "2", "3"],
@@ -77,7 +81,6 @@ class BaseGenerator:
             for key in object_config:
                 if not key.startswith('__'):
                     object_config[key] = self.__validate_data_config(key, object_config[key])
-
 
     def __validate_data_config(self, key, config):
         if isinstance(config, dict):
@@ -176,7 +179,7 @@ class BaseGenerator:
                 for i in range(0, config['generating_time']):
                     value += str(uuid.uuid4())
                 value = value.replace('-', '')
-                value = value[:config['length']]
+                value = value[32*config['generating_time'] - config['length']:]
             elif config['type'] == 'datetime':
                 if config['lower-bound'] == config['upper-bound'] == 'NOW':
                     value = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -195,26 +198,27 @@ class BaseGenerator:
         # otherwise, the variable is a static value => return that value
         return config
 
-    def generate(self):
+    def generate(self, generate_time=1):
         exported_object = []
 
-        variables = {}
-        variable_config = self.validated_job_config['variables']
-        for key in variable_config:
-            variables[key] = self.__generate_value(variable_config[key])
-        #print(variables)
-        for object_config in self.validated_job_config['objects']:
-            simulated_object = {}
-            appear_probability = random.random()
-            if appear_probability > object_config['__probability']:
-                continue
-            delayed_probability = random.random()
-            if delayed_probability > object_config['__delay']['probability']:
-                #TODO: create delayed situation
-                pass
-            for key in object_config.keys():
-                if not key.startswith('__'):
-                    simulated_object[key] = self.__generate_value(object_config[key], predefined_variables=variables)
-            exported_object.append(simulated_object)
+        for i in range (0, generate_time):
+            variables = {}
+            variable_config = self.validated_job_config['variables']
+            for key in variable_config:
+                variables[key] = self.__generate_value(variable_config[key])
+            #print(variables)
+            for object_config in self.validated_job_config['objects']:
+                simulated_object = {}
+                appear_probability = random.random()
+                if appear_probability > object_config['__probability']:
+                    continue
+                delayed_probability = random.random()
+                if delayed_probability > object_config['__delay']['probability']:
+                    #TODO: create delayed situation
+                    pass
+                for key in object_config.keys():
+                    if not key.startswith('__'):
+                        simulated_object[key] = self.__generate_value(object_config[key], predefined_variables=variables)
+                exported_object.append(simulated_object)
 
         return exported_object
