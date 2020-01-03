@@ -5,18 +5,14 @@ import uuid
 import random
 import math
 import datetime
-import string
 
-from generators.generator_errors import *
+from errors import *
 
 
 class BaseGenerator:
 
     sample = '''
     {
-        "type": "batch",
-        "scheduling": {"repeat": false, "start-time": "2020-01-02 17:00:00"},
-        "generate_count": 1000,
         "variables": {
             "object-10": {"type": "string", "length": 100},
             "object-1": ["1", "2", "3"],

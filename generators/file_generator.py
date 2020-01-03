@@ -18,11 +18,13 @@ class FileGenerator(BaseGenerator):
         self.directory = directory
         self.filename = filename
 
-    def generate(self, generating_time=1, append=True):
+    def generate(self, generating_time=1, append=True, filename=None):
         # dump the generated objects to a json file
+        if filename is None:
+            filename = self.filename
         generated_objects = super().generate(generating_time)
-        full_filename = os.path.join(self.directory, self.filename)
-        if self.filename.find(".json") < 0 or self.filename.find(".json") != len(self.filename):
+        full_filename = os.path.join(self.directory, filename)
+        if filename.find(".json") < 0 or filename.find(".json") != len(filename):
             full_filename += ".json"
 
         with open(full_filename, 'w') as fp:
